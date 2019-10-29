@@ -2,10 +2,22 @@
 
 namespace Neat\Cache;
 
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
-interface TaggedCache extends CacheInterface
+interface Tags extends CacheInterface
 {
+    /**
+     * Set value with tags
+     *
+     * @param string                $key
+     * @param mixed                 $value
+     * @param DateInterval|int|null $ttl (optional)
+     * @param array                 $tags
+     * @return bool
+     */
+    public function set($key, $value, $ttl = null, array $tags = []);
+
     /**
      * Tag entry
      *

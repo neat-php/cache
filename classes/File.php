@@ -6,7 +6,7 @@ use DateInterval;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class File extends Abstraction implements TaggedCache
+class File extends Abstraction implements Tags
 {
     /** @var string */
     private $path;
@@ -70,12 +70,7 @@ class File extends Abstraction implements TaggedCache
             return $default;
         }
 
-        $value = file_get_contents($file);
-        if ($value === false) {
-            return $default;
-        }
-
-        return unserialize($value);
+        return unserialize(file_get_contents($file));
     }
 
     /**
@@ -99,7 +94,8 @@ class File extends Abstraction implements TaggedCache
         file_put_contents($path . '/meta', json_encode(compact('path', 'tags', 'expiration')));
 
         foreach ($tags as $tag) {
-            $this->tag($key, $tag);
+            $this->createPath(dirname($file = $this->tagFile($tag, $key)));
+            file_put_contents($file, $key);
         }
 
         return true;
@@ -224,11 +220,11 @@ class File extends Abstraction implements TaggedCache
     public function untag(string $key, string $tag)
     {
         if ($meta = $this->meta($key)) {
-            $meta->tags = array_diff($meta->tags, [$tag]);
+            $meta->tags = array_values(array_diff($meta->tags ?? [], [$tag]));
             file_put_contents($this->itemPath($key) . '/meta', json_encode($meta));
         }
 
-        if (file_exists($file = $this->tagFile($key, $tag))) {
+        if (file_exists($file = $this->tagFile($tag, $key))) {
             unlink($file);
         }
     }

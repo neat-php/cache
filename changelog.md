@@ -8,3 +8,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - File cache implementation.
 - Memory cache implementation.
+- Tags interface.

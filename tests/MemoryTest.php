@@ -2,9 +2,9 @@
 
 namespace Neat\Cache\Test;
 
+use DateInterval;
 use Neat\Cache\Memory;
 use PHPUnit\Framework\TestCase;
-use Psr\SimpleCache\CacheInterface;
 
 class MemoryTest extends TestCase
 {
@@ -13,7 +13,13 @@ class MemoryTest extends TestCase
     use ExpirationTests;
     use ValidationTests;
 
-    public function cache($ttl = null): CacheInterface
+    /**
+     * Create cache
+     *
+     * @param DateInterval|int|null $ttl
+     * @return Memory
+     */
+    public function cache($ttl = null)
     {
         return new Memory([], $ttl);
     }

@@ -2,7 +2,8 @@
 
 namespace Neat\Cache\Test;
 
-use Psr\SimpleCache\CacheInterface;
+use DateInterval;
+use Neat\Cache\Abstraction;
 
 /**
  * Miss tests
@@ -12,7 +13,13 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait MissTests
 {
-    abstract public function cache($ttl = null): CacheInterface;
+    /**
+     * Create cache
+     *
+     * @param DateInterval|int|null $ttl
+     * @return Abstraction
+     */
+    abstract public function cache($ttl = null);
 
     public function testMiss()
     {

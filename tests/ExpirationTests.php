@@ -2,8 +2,9 @@
 
 namespace Neat\Cache\Test;
 
+use DateInterval;
+use Neat\Cache\Abstraction;
 use Neat\Cache\InvalidArgumentException;
-use Psr\SimpleCache\CacheInterface;
 
 /**
  * Expiration tests
@@ -13,7 +14,13 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait ExpirationTests
 {
-    abstract public function cache($ttl = null): CacheInterface;
+    /**
+     * Create cache
+     *
+     * @param DateInterval|int|null $ttl
+     * @return Abstraction
+     */
+    abstract public function cache($ttl = null);
 
     public function testExpirationWithZeroTtl()
     {

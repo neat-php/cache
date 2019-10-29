@@ -3,7 +3,7 @@
 namespace Neat\Cache\Test;
 
 use DateInterval;
-use Psr\SimpleCache\CacheInterface;
+use Neat\Cache\Abstraction;
 
 /**
  * Hit tests
@@ -13,7 +13,13 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait HitTests
 {
-    abstract public function cache($ttl = null): CacheInterface;
+    /**
+     * Create cache
+     *
+     * @param DateInterval|int|null $ttl
+     * @return Abstraction
+     */
+    abstract public function cache($ttl = null);
 
     public function hitData(): array
     {
