@@ -21,6 +21,8 @@ class File extends Abstraction implements TaggedCache
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR);
         $this->ttl  = $ttl;
+
+        $this->expiration();
     }
 
     /**

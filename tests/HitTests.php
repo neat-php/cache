@@ -2,6 +2,7 @@
 
 namespace Neat\Cache\Test;
 
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -12,7 +13,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait HitTests
 {
-    abstract public function cache(int $ttl = null): CacheInterface;
+    abstract public function cache($ttl = null): CacheInterface;
 
     public function hitData(): array
     {
@@ -62,6 +63,21 @@ trait HitTests
     }
 
     /**
+     * Test hit with TTL
+     *
+     * @dataProvider hitData
+     * @param mixed $value
+     */
+    public function testHitDateIntervalWithTtl($value)
+    {
+        $cache = $this->cache();
+        $cache->set('key', $value, new DateInterval('PT10S'));
+
+        $this->assertTrue($cache->has('key'));
+        $this->assertSame(serialize($value), serialize($cache->get('key')));
+    }
+
+    /**
      * Test hit with default TTL
      *
      * @dataProvider hitData
@@ -74,5 +90,55 @@ trait HitTests
 
         $this->assertTrue($cache->has('key'));
         $this->assertSame(serialize($value), serialize($cache->get('key')));
+    }
+
+    /**
+     * Test hit with default TTL
+     *
+     * @dataProvider hitData
+     * @param mixed $value
+     */
+    public function testHitWithDefaultDateIntervalTtl($value)
+    {
+        $cache = $this->cache(new DateInterval('PT10S'));
+        $cache->set('key', $value);
+
+        $this->assertTrue($cache->has('key'));
+        $this->assertSame(serialize($value), serialize($cache->get('key')));
+    }
+
+    /**
+     * Test hit multiple
+     */
+    public function testHitMultiple()
+    {
+        $cache = $this->cache();
+        $cache->setMultiple($data = [
+            'a' => 1,
+            'b' => 2,
+            'i' => true,
+            'j' => false,
+            'r' => [],
+            's' => [1, 2, 3],
+            't' => ['a' => 1, 'b' => 2, 'c' => 3],
+            'x' => (object) [],
+            'y' => (object) ['property' => 'value'],
+        ]);
+
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            $data,
+            iterator_to_array($cache->getMultiple(array_keys($data)))
+        );
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            ['a' => 1, 'c' => null, 'r' => []],
+            iterator_to_array($cache->getMultiple(['a', 'c', 'r']))
+        );
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            ['a' => 1, 'c' => 'default', 'r' => []],
+            iterator_to_array($cache->getMultiple(['a', 'c', 'r'], 'default'))
+        );
     }
 }

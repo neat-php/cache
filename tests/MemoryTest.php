@@ -13,7 +13,7 @@ class MemoryTest extends TestCase
     use ExpirationTests;
     use ValidationTests;
 
-    public function cache(int $ttl = null): CacheInterface
+    public function cache($ttl = null): CacheInterface
     {
         return new Memory([], $ttl);
     }

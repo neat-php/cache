@@ -12,7 +12,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait ValidationTests
 {
-    abstract public function cache(int $ttl = null): CacheInterface;
+    abstract public function cache($ttl = null): CacheInterface;
 
     /**
      * @return array
@@ -31,6 +31,50 @@ trait ValidationTests
             ['\\'],
             ['@'],
             [':'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function multipleInvalidKeys(): array
+    {
+        return [
+            [null],
+            [true],
+            [1],
+            ['x'],
+            [['x', true, 'z']],
+            [['x', 1, 'z']],
+            [['x', '', 'z']],
+            [['x', '{', 'z']],
+            [['x', '}', 'z']],
+            [['x', '(', 'z']],
+            [['x', ')', 'z']],
+            [['x', '/', 'z']],
+            [['x', '\\', 'z']],
+            [['x', '@', 'z']],
+            [['x', ':', 'z']],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function setMultipleInvalidKeys(): array
+    {
+        return [
+            [[0 => 'value']],
+            [[1 => 'value']],
+            [['' => 'value']],
+            [['{' => 'value']],
+            [['}' => 'value']],
+            [['(' => 'value']],
+            [[')' => 'value']],
+            [['/' => 'value']],
+            [['\\' => 'value']],
+            [['@' => 'value']],
+            [[':' => 'value']],
         ];
     }
 
@@ -84,5 +128,47 @@ trait ValidationTests
         $this->expectException(InvalidArgumentException::class);
 
         $this->cache()->delete($key);
+    }
+
+    /**
+     * Test get multiple invalid keys
+     *
+     * @param array $keys
+     * @dataProvider multipleInvalidKeys
+     */
+    public function testGetMultipleInvalidKeys($keys)
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $iterator = $this->cache()->getMultiple($keys);
+        foreach ($iterator as $value) {
+            $this->assertNull($value);
+        }
+    }
+
+    /**
+     * Test set multiple invalid keys
+     *
+     * @param array $values
+     * @dataProvider setMultipleInvalidKeys
+     */
+    public function testSetMultipleInvalidKeys($values)
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->cache()->setMultiple($values);
+    }
+
+    /**
+     * Test delete multiple invalid keys
+     *
+     * @param array $keys
+     * @dataProvider multipleInvalidKeys
+     */
+    public function testDeleteMultipleInvalidKeys($keys)
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->cache()->deleteMultiple($keys);
     }
 }

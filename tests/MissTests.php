@@ -12,7 +12,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait MissTests
 {
-    abstract public function cache(int $ttl = null): CacheInterface;
+    abstract public function cache($ttl = null): CacheInterface;
 
     public function testMiss()
     {
@@ -54,4 +54,42 @@ trait MissTests
         $this->assertNull($cache->get('KeY'));
         $this->assertSame('default', $cache->get('KeY', 'default'));
     }
+
+    /**
+     * Test hit multiple
+     */
+    public function testMissMultiple()
+    {
+        $cache = $this->cache();
+        $cache->setMultiple($data = [
+            'a' => 1,
+            'b' => 2,
+            'i' => true,
+            'j' => false,
+            'r' => [],
+            's' => [1, 2, 3],
+            't' => ['a' => 1, 'b' => 2, 'c' => 3],
+            'x' => (object) [],
+            'y' => (object) ['property' => 'value'],
+        ]);
+        $cache->deleteMultiple(['i', 'r', 't']);
+        $data = array_merge($data, ['i' => null, 'r' => null, 't' => null]);
+
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            $data,
+            iterator_to_array($cache->getMultiple(array_keys($data)))
+        );
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            ['a' => 1, 'c' => null, 'r' => null],
+            iterator_to_array($cache->getMultiple(['a', 'c', 'r']))
+        );
+        /** @noinspection PhpParamsInspection */
+        $this->assertEquals(
+            ['a' => 1, 'c' => 'default', 'r' => 'default'],
+            iterator_to_array($cache->getMultiple(['a', 'c', 'r'], 'default'))
+        );
+    }
+
 }

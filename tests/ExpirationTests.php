@@ -2,6 +2,7 @@
 
 namespace Neat\Cache\Test;
 
+use Neat\Cache\InvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -12,7 +13,7 @@ use Psr\SimpleCache\CacheInterface;
  */
 trait ExpirationTests
 {
-    abstract public function cache(int $ttl = null): CacheInterface;
+    abstract public function cache($ttl = null): CacheInterface;
 
     public function testExpirationWithZeroTtl()
     {
@@ -30,5 +31,20 @@ trait ExpirationTests
         $cache->set('key', 'value', -10);
         $this->assertFalse($cache->has('key'));
         $this->assertNull($cache->get('key'));
+    }
+
+    public function testExpirationWithInvalidTtl()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $cache = $this->cache();
+        $cache->set('key', 'value', true);
+    }
+
+    public function testExpirationWithInvalidDefaultTtl()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->cache(true);
     }
 }
