@@ -12,7 +12,6 @@ abstract class Abstraction implements CacheInterface
     /** @var DateInterval|int|null */
     protected $ttl;
 
-    /** @noinspection PhpDocMissingThrowsInspection */
     /**
      * Get expiration time
      *

@@ -6,7 +6,7 @@ use DateInterval;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class File extends Abstraction
+class File extends Abstraction implements TaggedCache
 {
     /** @var string */
     private $path;
@@ -39,7 +39,8 @@ class File extends Abstraction
             return false;
         }
 
-        if (isset($meta->expires) && time() > $meta->expires) {
+        $expiration = $meta->expiration ?? null;
+        if (isset($expiration) && $expiration <= time()) {
             $this->delete($key);
 
             return false;
@@ -88,18 +89,15 @@ class File extends Abstraction
     {
         $this->validate($key);
 
+        $expiration = $this->expiration($ttl);
+
         $path = $this->createPath($this->itemPath($key));
 
         file_put_contents($path . '/value', serialize($value));
-        file_put_contents($path . '/meta', json_encode([
-            'path'    => $path,
-            'tags'    => $tags,
-            'expires' => $this->expiration($ttl),
-        ]));
+        file_put_contents($path . '/meta', json_encode(compact('path', 'tags', 'expiration')));
 
         foreach ($tags as $tag) {
-            $this->createPath(dirname($file = $this->tagFile($key, $tag)));
-            file_put_contents($file, $key);
+            $this->tag($key, $tag);
         }
 
         return true;
@@ -150,7 +148,7 @@ class File extends Abstraction
      * @param string $key
      * @return object|null
      */
-    public function meta($key)
+    private function meta($key)
     {
         $filename = $this->itemPath($key) . '/meta';
         if (!file_exists($filename)) {
@@ -166,7 +164,7 @@ class File extends Abstraction
      * @param string $tag
      * @return string[]
      */
-    public function keysByTag($tag)
+    public function keys(string $tag): array
     {
         $path = $this->tagPath($tag);
         if (!file_exists($path)) {
@@ -187,6 +185,53 @@ class File extends Abstraction
     }
 
     /**
+     * Get tags
+     *
+     * @param string $key
+     * @return string[]
+     */
+    public function tags(string $key): array
+    {
+        return $this->meta($key)->tags ?? [];
+    }
+
+    /**
+     * Tag entry
+     *
+     * @param string $key
+     * @param string $tag
+     */
+    public function tag(string $key, string $tag)
+    {
+        if ($meta = $this->meta($key)) {
+            $meta->tags[] = $tag;
+            file_put_contents($this->itemPath($key) . '/meta', json_encode($meta));
+        }
+
+        $this->createPath(dirname($file = $this->tagFile($key, $tag)));
+
+        file_put_contents($file, $key);
+    }
+
+    /**
+     * Untag entry
+     *
+     * @param string $key
+     * @param string $tag
+     */
+    public function untag(string $key, string $tag)
+    {
+        if ($meta = $this->meta($key)) {
+            $meta->tags = array_diff($meta->tags, [$tag]);
+            file_put_contents($this->itemPath($key) . '/meta', json_encode($meta));
+        }
+
+        if (file_exists($file = $this->tagFile($key, $tag))) {
+            unlink($file);
+        }
+    }
+
+    /**
      * Clear path
      *
      * @param string $path
@@ -197,10 +242,10 @@ class File extends Abstraction
         $files     = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($files as $file) {
-            if ($file->isDir) {
-                rmdir($file->getRealPath());
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
             } else {
-                unlink($file->getRealPath());
+                unlink($file->getPathname());
             }
         }
     }
@@ -220,6 +265,12 @@ class File extends Abstraction
         return $path;
     }
 
+    /**
+     * Get hash-like path
+     * 
+     * @param string $key
+     * @return string
+     */
     protected function hashPath(string $key): string
     {
         $hash = md5($key);
@@ -227,16 +278,35 @@ class File extends Abstraction
         return substr($hash, 0, 2) . '/' . substr($hash, 2);
     }
 
+    /**
+     * Get item path
+     * 
+     * @param string $key
+     * @return string
+     */
     protected function itemPath(string $key): string
     {
         return $this->path . '/item/' . $this->hashPath($key);
     }
 
+    /**
+     * Get tag path
+     * 
+     * @param string $tag
+     * @return string
+     */
     protected function tagPath(string $tag): string
     {
         return $this->path . '/tag/' . $this->hashPath($tag);
     }
 
+    /**
+     * Get tag file
+     * 
+     * @param string $tag
+     * @param string $key
+     * @return string
+     */
     protected function tagFile(string $tag, string $key): string
     {
         return $this->tagPath($tag) . '/' . $this->hashPath($key);

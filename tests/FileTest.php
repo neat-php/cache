@@ -2,11 +2,12 @@
 
 namespace Neat\Cache\Test;
 
-use Neat\Cache\Memory;
+use Neat\Cache\File;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
-class MemoryTest extends TestCase
+class FileTest extends TestCase
 {
     use HitTests;
     use MissTests;
@@ -15,6 +16,8 @@ class MemoryTest extends TestCase
 
     public function cache(int $ttl = null): CacheInterface
     {
-        return new Memory([], $ttl);
+        $root = vfsStream::setup();
+
+        return new File($root->url(), $ttl);
     }
 }

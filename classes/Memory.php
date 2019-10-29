@@ -42,7 +42,9 @@ class Memory extends Abstraction
         }
 
         $expiration = $this->expiration[$key] ?? null;
-        if ($expiration && $expiration < time()) {
+        if (isset($expiration) && $expiration <= time()) {
+            $this->delete($key);
+
             return false;
         }
 
