@@ -3,7 +3,12 @@
     "description": "Neat Cache components",
     "type": "library",
     "keywords": [
-        "cache"
+        "psr-16",
+        "neat",
+        "cache",
+        "tags",
+        "file",
+        "memory"
     ],
     "license": "MIT",
     "authors": [
