@@ -206,7 +206,7 @@ class File extends Abstraction implements Tags
             file_put_contents($this->itemPath($key) . '/meta', json_encode($meta));
         }
 
-        $this->createPath(dirname($file = $this->tagFile($key, $tag)));
+        $this->createPath(dirname($file = $this->tagFile($tag, $key)));
 
         file_put_contents($file, $key);
     }

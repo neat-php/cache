@@ -59,9 +59,11 @@ trait TagTests
 
         $cache->tag('key', 'tag1');
         $this->assertSame(['tag1'], $cache->tags('key'));
+        $this->assertSame(['key'], $cache->keys('tag1'));
 
         $cache->tag('key', 'tag2');
         $this->assertSame(['tag1', 'tag2'], $cache->tags('key'));
+        $this->assertSame(['key'], $cache->keys('tag1'));
     }
 
     /**
