@@ -3,7 +3,7 @@
 namespace Neat\Cache\Test;
 
 use DateInterval;
-use Neat\Cache\Abstraction;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Hit tests
@@ -17,9 +17,9 @@ trait HitTests
      * Create cache
      *
      * @param DateInterval|int|null $ttl
-     * @return Abstraction
+     * @return CacheInterface
      */
-    abstract public function cache($ttl = null);
+    abstract public function cache($ttl = null): CacheInterface;
 
     public function hitData(): array
     {
@@ -131,17 +131,14 @@ trait HitTests
             'y' => (object) ['property' => 'value'],
         ]);
 
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             $data,
             iterator_to_array($cache->getMultiple(array_keys($data)))
         );
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             ['a' => 1, 'c' => null, 'r' => []],
             iterator_to_array($cache->getMultiple(['a', 'c', 'r']))
         );
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             ['a' => 1, 'c' => 'default', 'r' => []],
             iterator_to_array($cache->getMultiple(['a', 'c', 'r'], 'default'))

@@ -19,7 +19,7 @@ class MemoryTest extends TestCase
      * @param DateInterval|int|null $ttl
      * @return Memory
      */
-    public function cache($ttl = null)
+    public function cache($ttl = null): Memory
     {
         return new Memory([], $ttl);
     }

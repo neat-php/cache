@@ -4,7 +4,6 @@ namespace Neat\Cache\Test;
 
 use DateInterval;
 use Neat\Cache\File;
-use Neat\Cache\Tags;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
@@ -20,10 +19,10 @@ class FileTest extends TestCase
      * Create cache
      *
      * @param DateInterval|int|null $ttl
-     * @param string                $path
-     * @return Tags
+     * @param string|null           $path
+     * @return File
      */
-    public function cache($ttl = null, string $path = null)
+    public function cache($ttl = null, string $path = null): File
     {
         $path = $path ?? vfsStream::setup()->url();
 
@@ -33,7 +32,7 @@ class FileTest extends TestCase
     /**
      * Test concurrent get and delete
      */
-    public function testDeletedValue()
+    public function testDeletedValue(): void
     {
         $root = vfsStream::setup();
 

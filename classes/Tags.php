@@ -16,7 +16,7 @@ interface Tags extends CacheInterface
      * @param array                 $tags
      * @return bool
      */
-    public function set($key, $value, $ttl = null, array $tags = []);
+    public function set($key, $value, $ttl = null, array $tags = []): bool;
 
     /**
      * Tag entry
@@ -24,7 +24,7 @@ interface Tags extends CacheInterface
      * @param string $key
      * @param string $tag
      */
-    public function tag(string $key, string $tag);
+    public function tag(string $key, string $tag): void;
 
     /**
      * Untag entry
@@ -32,7 +32,7 @@ interface Tags extends CacheInterface
      * @param string $key
      * @param string $tag
      */
-    public function untag(string $key, string $tag);
+    public function untag(string $key, string $tag): void;
 
     /**
      * Get tags

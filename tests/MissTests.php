@@ -3,7 +3,7 @@
 namespace Neat\Cache\Test;
 
 use DateInterval;
-use Neat\Cache\Abstraction;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Miss tests
@@ -17,9 +17,9 @@ trait MissTests
      * Create cache
      *
      * @param DateInterval|int|null $ttl
-     * @return Abstraction
+     * @return CacheInterface
      */
-    abstract public function cache($ttl = null);
+    abstract public function cache($ttl = null): CacheInterface;
 
     public function testMiss()
     {
@@ -82,17 +82,14 @@ trait MissTests
         $cache->deleteMultiple(['i', 'r', 't']);
         $data = array_merge($data, ['i' => null, 'r' => null, 't' => null]);
 
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             $data,
             iterator_to_array($cache->getMultiple(array_keys($data)))
         );
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             ['a' => 1, 'c' => null, 'r' => null],
             iterator_to_array($cache->getMultiple(['a', 'c', 'r']))
         );
-        /** @noinspection PhpParamsInspection */
         $this->assertEquals(
             ['a' => 1, 'c' => 'default', 'r' => 'default'],
             iterator_to_array($cache->getMultiple(['a', 'c', 'r'], 'default'))

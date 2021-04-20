@@ -33,7 +33,7 @@ class Memory extends Abstraction
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function has($key)
+    public function has($key): bool
     {
         $this->validate($key);
 
@@ -77,7 +77,7 @@ class Memory extends Abstraction
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
         $this->validate($key);
 
@@ -94,7 +94,7 @@ class Memory extends Abstraction
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         $this->validate($key);
 
@@ -109,7 +109,7 @@ class Memory extends Abstraction
      *
      * @return bool
      */
-    public function clear()
+    public function clear(): bool
     {
         $this->data = [];
         $this->expiration = [];

@@ -3,8 +3,8 @@
 namespace Neat\Cache\Test;
 
 use DateInterval;
-use Neat\Cache\Abstraction;
 use Neat\Cache\InvalidArgumentException;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Trait ValidationTests
@@ -17,9 +17,9 @@ trait ValidationTests
      * Create cache
      *
      * @param DateInterval|int|null $ttl
-     * @return Abstraction
+     * @return CacheInterface
      */
-    abstract public function cache($ttl = null);
+    abstract public function cache($ttl = null): CacheInterface;
 
     /**
      * @return array
@@ -140,7 +140,7 @@ trait ValidationTests
     /**
      * Test get multiple invalid keys
      *
-     * @param array $keys
+     * @param array|mixed $keys
      * @dataProvider multipleInvalidKeys
      */
     public function testGetMultipleInvalidKeys($keys)
@@ -156,7 +156,7 @@ trait ValidationTests
     /**
      * Test set multiple invalid keys
      *
-     * @param array $values
+     * @param array|mixed $values
      * @dataProvider setMultipleInvalidKeys
      */
     public function testSetMultipleInvalidKeys($values)
@@ -169,7 +169,7 @@ trait ValidationTests
     /**
      * Test delete multiple invalid keys
      *
-     * @param array $keys
+     * @param array|mixed $keys
      * @dataProvider multipleInvalidKeys
      */
     public function testDeleteMultipleInvalidKeys($keys)

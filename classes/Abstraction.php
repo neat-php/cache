@@ -18,7 +18,7 @@ abstract class Abstraction implements CacheInterface
      * @param DateInterval|int|null $ttl
      * @return int|null
      */
-    protected function expiration($ttl = null)
+    protected function expiration($ttl = null): ?int
     {
         $ttl = $ttl ?? $this->ttl;
         if (is_null($ttl)) {
@@ -39,7 +39,7 @@ abstract class Abstraction implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    abstract public function has($key);
+    abstract public function has($key): bool;
 
     /**
      * Get value
@@ -60,7 +60,7 @@ abstract class Abstraction implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    abstract public function set($key, $value, $ttl = null);
+    abstract public function set($key, $value, $ttl = null): bool;
 
     /**
      * Delete value
@@ -69,14 +69,14 @@ abstract class Abstraction implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    abstract public function delete($key);
+    abstract public function delete($key): bool;
 
     /**
      * Clear values
      *
      * @return bool
      */
-    abstract public function clear();
+    abstract public function clear(): bool;
 
     /**
      * Get multiple values
@@ -103,7 +103,7 @@ abstract class Abstraction implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple($values, $ttl = null): bool
     {
         $this->validateMultiple($values);
 
@@ -122,7 +122,7 @@ abstract class Abstraction implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple($keys): bool
     {
         $this->validateMultiple($keys);
 
@@ -137,10 +137,10 @@ abstract class Abstraction implements CacheInterface
     /**
      * Validate that given keys can be iterated over
      *
-     * @param iterable $keys
+     * @param iterable|mixed $keys
      * @throws InvalidArgumentException
      */
-    protected function validateMultiple($keys)
+    protected function validateMultiple($keys): void
     {
         if (!is_array($keys) && !$keys instanceof Traversable) {
             throw new InvalidArgumentException('Keys must be iterable');
@@ -150,10 +150,10 @@ abstract class Abstraction implements CacheInterface
     /**
      * Validate given key
      *
-     * @param string $key
+     * @param string|mixed $key
      * @throws InvalidArgumentException
      */
-    protected function validate($key)
+    protected function validate($key): void
     {
         if (!is_string($key) || $key === '') {
             throw new InvalidArgumentException('Key must be a non empty string');

@@ -32,7 +32,7 @@ class File extends Abstraction implements Tags
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function has($key)
+    public function has($key): bool
     {
         $this->validate($key);
 
@@ -82,7 +82,7 @@ class File extends Abstraction implements Tags
      * @param array                 $tags
      * @return bool
      */
-    public function set($key, $value, $ttl = null, array $tags = [])
+    public function set($key, $value, $ttl = null, array $tags = []): bool
     {
         $this->validate($key);
 
@@ -108,7 +108,7 @@ class File extends Abstraction implements Tags
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         $this->validate($key);
 
@@ -133,7 +133,7 @@ class File extends Abstraction implements Tags
      *
      * @return bool
      */
-    public function clear()
+    public function clear(): bool
     {
         $this->clearPath($this->path);
 
@@ -146,7 +146,7 @@ class File extends Abstraction implements Tags
      * @param string $key
      * @return object|null
      */
-    private function meta($key)
+    private function meta(string $key): ?object
     {
         $filename = $this->itemPath($key) . '/meta';
         if (!file_exists($filename)) {
@@ -199,7 +199,7 @@ class File extends Abstraction implements Tags
      * @param string $key
      * @param string $tag
      */
-    public function tag(string $key, string $tag)
+    public function tag(string $key, string $tag): void
     {
         if ($meta = $this->meta($key)) {
             $meta->tags[] = $tag;
@@ -217,7 +217,7 @@ class File extends Abstraction implements Tags
      * @param string $key
      * @param string $tag
      */
-    public function untag(string $key, string $tag)
+    public function untag(string $key, string $tag): void
     {
         if ($meta = $this->meta($key)) {
             $meta->tags = array_values(array_diff($meta->tags ?? [], [$tag]));

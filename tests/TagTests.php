@@ -4,6 +4,7 @@ namespace Neat\Cache\Test;
 
 use DateInterval;
 use Neat\Cache\Tags;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Tag tests
@@ -20,7 +21,7 @@ trait TagTests
      * @param DateInterval|int|null $ttl
      * @return Tags
      */
-    abstract public function cache($ttl = null);
+    abstract public function cache($ttl = null): CacheInterface;
 
     /**
      * Test without tags
