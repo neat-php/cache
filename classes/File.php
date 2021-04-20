@@ -236,6 +236,10 @@ class File extends Abstraction implements Tags
      */
     protected function clearPath(string $path)
     {
+        if (!file_exists($path)) {
+            return;
+        }
+
         $directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
         $files     = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::CHILD_FIRST);
 
